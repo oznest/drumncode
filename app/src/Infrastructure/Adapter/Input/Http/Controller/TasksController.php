@@ -18,7 +18,6 @@ final class TasksController extends AbstractController
         private EntityManagerInterface $entityManager,
         private SerializerInterface $serializer,
     ) {
-
     }
 
     #[Route('/tasks', name: 'app_tasks')]

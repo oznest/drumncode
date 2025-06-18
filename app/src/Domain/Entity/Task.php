@@ -1,7 +1,9 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Domain\Entity;
+
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
@@ -81,7 +83,6 @@ class Task
     {
         return $this->status;
     }
-
 
     public function setPriority(int $priority): Task
     {
