@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Weather api test!{% endblock %}
+
+{% block body %}
+    <div class="example-wrapper">
+        {% if weather is not null %}
+        <div>Текущая погода в городе {{ city }}</div>
+        <table>
+            <tr>
+                <td>Температура</td>
+                <td>{{ weather.current.temperature }}</td>
+            </tr>
+            <tr>
+                <td>Состояние</td>
+                <td>{{ weather.current.condition.text }}</td>
+            </tr>
+            <tr>
+                <td>Влажность</td>
+                <td>{{ weather.current.humidity }}</td>
+            </tr>
+            <tr>
+                <td>Скорость ветра:</td>
+                <td>{{ weather.current.windKph }}</td>
+            </tr>
+            <tr>
+                <td>Последнее обновление:</td>
+                <td>{{ weather.current.lastUpdated }}</td>
+            </tr>
+        </table>
+        {% endif %}
+    </div>
+{% endblock %}

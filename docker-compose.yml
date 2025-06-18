@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  php:
+    image: php:8.2-fpm
+    container_name: symfony_php
+    build: ./docker/php
+    volumes:
+      - ./app:/var/www/symfony/app
+    environment:
+      XDEBUG_CONFIG: "remote_host=10.10.12.1 remote_enable=1"
+      PHP_IDE_CONFIG: "serverName=litvinov.local"
+    expose:
+      - 9003
+      - 9000
+    networks:
+      - symfony
+
+  nginx:
+    image: nginx:latest
+    container_name: symfony_nginx
+    ports:
+      - "8080:80"
+    volumes:
+      - ./app:/var/www/symfony/app
+      - ./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - php
+    networks:
+      - symfony
+
+  db:
+    image: mysql:latest
+    container_name: symfony-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: symfony
+      MYSQL_USER: symfony_user
+      MYSQL_PASSWORD: symfony_pass
+#    volumes:
+#      - db_data:/var/lib/mysql
+    networks:
+      - symfony
+    ports:
+      - "3306:3306"
+networks:
+  symfony:
+    driver: bridge
