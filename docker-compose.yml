@@ -37,8 +37,8 @@ services:
       MYSQL_DATABASE: symfony
       MYSQL_USER: symfony_user
       MYSQL_PASSWORD: symfony_pass
-#    volumes:
-#      - db_data:/var/lib/mysql
+    volumes:
+      - ./docker/mysql:/var/lib/mysql
     networks:
       - symfony
     ports:

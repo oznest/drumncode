@@ -25,3 +25,7 @@ services:
             $apiKey: '%env(WEATHER_API_KEY)%'
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    App\Infrastructure\Adapter\Input\Http\Controller\:
+        resource: '../src/Infrastructure/Adapter/Input/Http/Controller/'
+        tags: ['controller.service_arguments']
