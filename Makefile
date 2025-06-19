@@ -12,3 +12,7 @@ install:
 	docker exec -it symfony_php sh -c "cd /var/www/symfony/app && composer install"
 recreate:
 	make down && make up
+check_code_style:
+	docker exec -it -w /var/www/symfony/app/ symfony_php php vendor/bin/phpcs
+fix_code_style:
+	docker exec -it -w /var/www/symfony/app/ symfony_php php vendor/bin/phpcbf
