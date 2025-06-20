@@ -21,3 +21,8 @@ services:
             - '../src/Kernel.php'
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+    App\Application\Command\:
+        resource: '../src/Application/Command'
+        exclude: '../src/Application/Command/**/{*Command.php}'
+        tags:
+            - { name: 'messenger.message_handler', bus: 'messenger.bus.default' }

@@ -8,11 +8,14 @@ services:
     volumes:
       - ./app:/var/www/symfony/app
     environment:
-      XDEBUG_CONFIG: "remote_host=10.10.12.1 remote_enable=1"
-      PHP_IDE_CONFIG: "serverName=litvinov.local"
-    expose:
-      - 9003
-      - 9000
+      PHP_IDE_CONFIG: "serverName=drumncode"
+#    expose:
+#      - 9003
+#      - 9000
+    ports:
+      - "9003:9003"
+    extra_hosts:
+      - "host.docker.internal:10.0.2.2"
     networks:
       - symfony
 
