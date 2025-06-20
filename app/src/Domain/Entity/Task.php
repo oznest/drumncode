@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace App\Domain\Entity;
 
+use App\Domain\Enum\TaskStatus;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: \App\Infrastructure\Repository\TaskRepository::class)]
 #[ORM\Table(name: 'tasks')]
 #[ORM\HasLifecycleCallbacks]
 class Task
@@ -27,6 +28,7 @@ class Task
     #[Groups(['task:read'])]
     private string $title;
     #[ORM\Column(type: 'text', nullable: true)]
+    #[Groups(['task:read'])]
     private string $description;
 
     #[ORM\Column(type: 'datetime_immutable')]
@@ -35,8 +37,13 @@ class Task
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
-    public function __construct()
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[Groups(['task:read'])]
+    private User $user;
+
+    public function __construct(User $user)
     {
+        $this->user = $user;
         $this->createdAt = new \DateTimeImmutable();
         $this->updatedAt = new \DateTimeImmutable();
     }
@@ -100,5 +107,10 @@ class Task
     {
         $this->description = $description;
         return $this;
+    }
+
+    public function getUser(): User
+    {
+        return $this->user;
     }
 }
