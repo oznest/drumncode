@@ -113,4 +113,9 @@ class Task
     {
         return $this->user;
     }
+
+    public function isDone(): bool
+    {
+        return $this->status === TaskStatus::DONE;
+    }
 }

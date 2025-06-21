@@ -26,3 +26,9 @@ services:
         exclude: '../src/Application/Command/**/{*Command.php}'
         tags:
             - { name: 'messenger.message_handler', bus: 'messenger.bus.default' }
+
+    App\Fixtures\Faker\CustomFakerProvider:
+        arguments:
+            $passwordHasher: '@security.user_password_hasher'
+        tags:
+            - { name: nelmio_alice.faker.provider }

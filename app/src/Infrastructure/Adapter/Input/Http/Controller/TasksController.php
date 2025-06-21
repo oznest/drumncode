@@ -90,7 +90,7 @@ final class TasksController extends AbstractController
             return $this->json(['errors' => (string) $errors], 400);
         }
         $this->messageBus->dispatch(new CreateTaskCommand($taskDto, $this->getUser()));
-        return $this->json(['message' => 'User created'], 201);
+        return $this->json(['message' => 'Task created'], 201);
     }
 
     #[Route('/api/tasks/{id}', name: 'api_task_delete', methods: ['DELETE'])]
