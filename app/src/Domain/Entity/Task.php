@@ -63,6 +63,10 @@ class Task
         return $this->title;
     }
 
+    public function getDescription(): string
+    {
+        return $this->description;
+    }
 
     #[ORM\PreUpdate]
     public function setUpdatedAtValue(): void

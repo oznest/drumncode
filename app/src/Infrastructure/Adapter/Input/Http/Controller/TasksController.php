@@ -22,9 +22,9 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 final class TasksController extends AbstractController
 {
     public function __construct(
-        private EntityManagerInterface $entityManager,
-        private SerializerInterface $serializer,
-        private MessageBusInterface $messageBus
+        private readonly EntityManagerInterface $entityManager,
+        private readonly SerializerInterface $serializer,
+        private readonly MessageBusInterface $messageBus
     ) {
     }
 
