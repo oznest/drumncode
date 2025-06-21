@@ -1,0 +1,33 @@
+App\Domain\Entity\Task:
+  task1:
+    status: 'todo'
+    priority: 1
+    title: 'title'
+    description: 'description'
+    __construct: ['@user_1']
+  task2:
+    status: 'todo'
+    priority: 1
+    title: 'title'
+    description: 'description'
+    __construct: [ '@user_2' ]
+  task3:
+    status: 'done'
+    priority: 1
+    title: 'title'
+    description: 'description'
+    __construct: [ '@user_3' ]
+  task4:
+    status: 'todo'
+    priority: 1
+    title: 'title'
+    description: 'description'
+    __construct: [ '@user_3' ]
+  task5:
+    status: 'todo'
+    priority: 1
+    title: 'title'
+    description: 'description'
+    __construct: [ '@user_3' ]
+
+

@@ -1,0 +1,13 @@
+App\Domain\Entity\User:
+  user_1:
+    email: 'user_1@example.com'
+    password: '<hashPassword(@user_1, "password")>'
+    roles: ['ROLE_USER']
+  user_2:
+    email: 'user_2@example.com'
+    password: '<hashPassword(@user_2, "password")>'
+    roles: [ 'ROLE_USER' ]
+  user_3:
+    email: 'user_3@example.com'
+    password: '<hashPassword(@user_3, "password")>'
+    roles: [ 'ROLE_USER' ]
