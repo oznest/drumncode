@@ -9,7 +9,6 @@ use Symfony\Component\Serializer\Attribute\SerializedName;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
-#[UniqueEntity(fields: ['email'], message: 'This email is already in use.')]
 class UserRegisterDto
 {
     #[Assert\NotBlank]
