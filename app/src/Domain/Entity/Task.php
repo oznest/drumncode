@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Domain\Entity;
 
 use App\Domain\Enum\TaskStatus;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
@@ -41,11 +43,20 @@ class Task
     #[Groups(['task:read'])]
     private User $user;
 
+    #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'subtasks')]
+    #[ORM\JoinColumn(onDelete: 'SET NULL')]
+    #[Groups(['task:read'])]
+    private ?Task $parent = null;
+
+    #[ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class, cascade: ['persist', 'remove'])]
+    private Collection $subtasks;
+
     public function __construct(User $user)
     {
         $this->user = $user;
         $this->createdAt = new \DateTimeImmutable();
         $this->updatedAt = new \DateTimeImmutable();
+        $this->subtasks = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -121,5 +132,27 @@ class Task
     public function isDone(): bool
     {
         return $this->status === TaskStatus::DONE;
+    }
+
+    public function getParent(): ?Task
+    {
+        return $this->parent;
+    }
+
+    public function setParent(?Task $parent): Task
+    {
+        $this->parent = $parent;
+        return $this;
+    }
+
+    public function getSubtasks(): Collection
+    {
+        return $this->subtasks;
+    }
+
+    public function setSubtasks(Collection $subtasks): Task
+    {
+        $this->subtasks = $subtasks;
+        return $this;
     }
 }

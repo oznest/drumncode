@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Infrastructure\DTO;
+namespace App\Infrastructure\DTO\User;
 
 use App\Application\Validator\UniqueEmail;
 use Symfony\Component\Serializer\Attribute\SerializedName;

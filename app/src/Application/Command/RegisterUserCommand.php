@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\Command;
 
-use App\Infrastructure\DTO\UserRegisterDto;
+use App\Infrastructure\DTO\User\UserRegisterDto;
 
 readonly class RegisterUserCommand
 {
