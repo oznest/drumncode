@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\DTO;
 
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use App\Application\Validator\UniqueEmail;
 use Symfony\Component\Serializer\Attribute\SerializedName;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
@@ -13,6 +13,7 @@ class UserRegisterDto
 {
     #[Assert\NotBlank]
     #[Assert\Email]
+    #[UniqueEmail]
     public string $email;
 
     #[Assert\NotBlank]

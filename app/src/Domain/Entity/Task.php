@@ -29,7 +29,7 @@ class Task
     private string $title;
     #[ORM\Column(type: 'text', nullable: true)]
     #[Groups(['task:read'])]
-    private string $description;
+    private ?string $description = null;
 
     #[ORM\Column(type: 'datetime_immutable')]
     private \DateTimeImmutable $createdAt;
@@ -63,7 +63,7 @@ class Task
         return $this->title;
     }
 
-    public function getDescription(): string
+    public function getDescription(): ?string
     {
         return $this->description;
     }

@@ -18,3 +18,6 @@ fix_code_style:
 	docker exec -it -w /var/www/symfony/app/ symfony_php php vendor/bin/phpcbf
 restart_php:
 	docker compose restart php
+fixtures_load:
+	docker exec -it -w /var/www/symfony/app/ symfony_php php bin/console -q hautelook:fixtures:load
+

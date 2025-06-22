@@ -20,6 +20,7 @@ class CreateTaskCommandHandler
         $task
             ->setPriority($command->dto->priority)
             ->setTitle($command->dto->title)
+            ->setDescription($command->dto->description)
             ->setStatus(TaskStatus::TODO);
         $this->entityManager->persist($task);
     }
