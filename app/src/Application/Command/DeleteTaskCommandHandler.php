@@ -13,7 +13,6 @@ class DeleteTaskCommandHandler
 {
     public function __construct(
         private TaskRepository $taskRepository,
-        private EntityManagerInterface $em,
         private AuthorizationCheckerInterface $auth
     ) {
     }
@@ -29,6 +28,6 @@ class DeleteTaskCommandHandler
             throw new AccessDeniedException();
         }
 
-        $this->em->remove($task);
+        $this->taskRepository->delete($task);
     }
 }
