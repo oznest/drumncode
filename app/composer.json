@@ -12,6 +12,7 @@
         "doctrine/doctrine-migrations-bundle": "^3.4.2",
         "doctrine/orm": "^3.4",
         "eightpoints/guzzle-bundle": ">=8.5.2",
+        "friendsofsymfony/elastica-bundle": "^6.6",
         "jms/serializer-bundle": "^5.5.1",
         "lexik/jwt-authentication-bundle": "^3.1",
         "nelmio/api-doc-bundle": "^5.3",

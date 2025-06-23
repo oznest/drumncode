@@ -6,7 +6,9 @@ use App\Application\Command\CreateTaskCommand;
 use App\Application\Command\DeleteTaskCommand;
 use App\Application\Command\UpdateTaskStatusCommand;
 use App\Domain\Entity\Task;
-use App\Infrastructure\DTO\TaskCreateDto;
+use App\Infrastructure\DTO\Task\CreateTaskDto;
+use App\Infrastructure\DTO\Task\DeleteTaskDto;
+use App\Infrastructure\DTO\Task\UpdateStatusDto;
 use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -22,9 +24,10 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 final class TasksController extends AbstractController
 {
     public function __construct(
-        private EntityManagerInterface $entityManager,
-        private SerializerInterface $serializer,
-        private MessageBusInterface $messageBus
+        private readonly EntityManagerInterface $entityManager,
+        private readonly SerializerInterface $serializer,
+        private readonly MessageBusInterface $messageBus,
+        private readonly ValidatorInterface $validator
     ) {
     }
 
@@ -68,6 +71,7 @@ final class TasksController extends AbstractController
                     new OA\Property(property: 'priority', type: 'integer', example: 1),
                     new OA\Property(property: 'title', type: 'string', example: 'title'),
                     new OA\Property(property: 'description', type: 'string', example: 'description'),
+                    new OA\Property(property: 'parent', type: 'int', example: 1),
                 ]
             )
         ),
@@ -80,16 +84,15 @@ final class TasksController extends AbstractController
         ]
     )]
     public function create(
-        Request $request,
-        SerializerInterface $serializer,
-        ValidatorInterface $validator
+        Request $request
     ): JsonResponse {
-        $taskDto = $serializer->deserialize($request->getContent(), TaskCreateDto::class, 'json');
-        $errors = $validator->validate($taskDto);
+        $taskDto = $this->serializer->deserialize($request->getContent(), CreateTaskDto::class, 'json');
+        $errors = $this->validator->validate($taskDto);
         if (count($errors) > 0) {
             return $this->json(['errors' => (string) $errors], 400);
         }
         $this->messageBus->dispatch(new CreateTaskCommand($taskDto, $this->getUser()));
+
         return $this->json(['message' => 'Task created'], 201);
     }
 
@@ -120,7 +123,15 @@ final class TasksController extends AbstractController
     public function delete(int $id): Response
     {
         try {
-            $this->messageBus->dispatch(new DeleteTaskCommand($id));
+            $deleteDto = new DeleteTaskDto();
+            $deleteDto->id = $id;
+
+            $errors = $this->validator->validate($deleteDto);
+            if (count($errors) > 0) {
+                return $this->json(['errors' => (string) $errors], 400);
+            }
+
+            $this->messageBus->dispatch(new DeleteTaskCommand($deleteDto->id));
         } catch (\RuntimeException $e) {
             throw new NotFoundHttpException($e->getMessage());
         }
@@ -136,22 +147,20 @@ final class TasksController extends AbstractController
     #[OA\Response(response: 200, description: 'Status updated')]
     public function updateStatus(
         int $id,
-        Request $request,
-        SerializerInterface $serializer,
-        MessageBusInterface $bus
+        Request $request
     ): JsonResponse {
-        $data = json_decode($request->getContent(), true);
-        $data['id'] = $id;
+
+        $dto = $this->serializer->deserialize($request->getContent(), UpdateStatusDto::class, 'json');
+        $dto->id = $id;
+
+        $this->validator->validate($dto);
+        $errors = $this->validator->validate($dto);
+        if (count($errors) > 0) {
+            return $this->json(['errors' => (string) $errors], 400);
+        }
 
         /** @var UpdateTaskStatusCommand $command */
-        $command = $serializer->deserialize(
-            json_encode($data),
-            UpdateTaskStatusCommand::class,
-            'json',
-            ['groups' => ['update_status']]
-        );
-
-        $bus->dispatch($command);
+        $this->messageBus->dispatch(new UpdateTaskStatusCommand($dto->id, $dto->status));
 
         return new JsonResponse(['message' => 'Status updated']);
     }

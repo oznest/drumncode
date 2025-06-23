@@ -23,4 +23,14 @@ class UpdateTaskStatusCommand
 
     #[Groups(['update_status'])]
     public TaskStatus $status;
+
+    /**
+     * @param int $id
+     * @param TaskStatus $status
+     */
+    public function __construct(int $id, TaskStatus $status)
+    {
+        $this->id = $id;
+        $this->status = $status;
+    }
 }
