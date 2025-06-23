@@ -15,15 +15,9 @@ class TaskRepository extends ServiceEntityRepository
         parent::__construct($registry, Task::class);
     }
 
-    public function deleteById(int $id): bool
+    public function delete(Task $task): bool
     {
-        $task = $this->find($id);
-        if (!$task) {
-            return false;
-        }
-
         $this->getEntityManager()->remove($task);
-        $this->getEntityManager()->flush();
 
         return true;
     }

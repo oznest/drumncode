@@ -13,7 +13,6 @@ class UpdateTaskStatusCommandHandler
 {
     public function __construct(
         private TaskRepository $repository,
-        private EntityManagerInterface $em,
         private AuthorizationCheckerInterface $auth
     ) {
     }

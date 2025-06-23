@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace App\Domain\Entity;
 
 use App\Domain\Enum\TaskStatus;
+use App\Infrastructure\Repository\TaskRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
-#[ORM\Entity(repositoryClass: \App\Infrastructure\Repository\TaskRepository::class)]
+
+#[ORM\Entity(repositoryClass: TaskRepository::class)]
 #[ORM\Table(name: 'tasks')]
 #[ORM\HasLifecycleCallbacks]
 class Task
@@ -37,7 +39,7 @@ class Task
     private \DateTimeImmutable $createdAt;
 
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
-    private ?\DateTimeImmutable $updatedAt = null;
+    private ?\DateTimeImmutable $completedAt = null;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[Groups(['task:read'])]
@@ -55,7 +57,6 @@ class Task
     {
         $this->user = $user;
         $this->createdAt = new \DateTimeImmutable();
-        $this->updatedAt = new \DateTimeImmutable();
         $this->subtasks = new ArrayCollection();
     }
 
@@ -98,6 +99,10 @@ class Task
     public function setStatus(TaskStatus $status): Task
     {
         $this->status = $status;
+        if ($this->isDone()) {
+           $this->completedAt = new \DateTimeImmutable();
+        }
+
         return $this;
     }
 
