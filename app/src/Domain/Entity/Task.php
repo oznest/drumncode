@@ -48,10 +48,10 @@ class Task
 
     #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'subtasks')]
     #[ORM\JoinColumn(onDelete: 'SET NULL')]
-    #[Groups(['task:read'])]
     private ?Task $parent = null;
 
     #[ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class, cascade: ['persist', 'remove'])]
+    #[Groups(['task:read'])]
     private Collection $subtasks;
 
     public function __construct(
@@ -175,6 +175,11 @@ class Task
         }
 
         return $this;
+    }
+
+    public function getSubtasks(): Collection
+    {
+        return $this->subtasks;
     }
 
     public function addSubtask(self $task): void
