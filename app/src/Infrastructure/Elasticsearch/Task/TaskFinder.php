@@ -4,14 +4,17 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Elasticsearch\Task;
 
+use App\Application\Query\SearchTasksQuery;
 use App\Infrastructure\DTO\Task\TaskFilter;
 use Elastica\Query;
 use FOS\ElasticaBundle\Finder\PaginatedFinderInterface;
+use Symfony\Bundle\SecurityBundle\Security;
 
 class TaskFinder
 {
     public function __construct(
-        private PaginatedFinderInterface $finder // инжектится fos_elastica.finder.task_index
+        private PaginatedFinderInterface $finder, // инжектится fos_elastica.finder.task_index,
+        private Security $security
     ) {
     }
 
@@ -40,8 +43,10 @@ class TaskFinder
             $boolQuery->addFilter($priorityFilter);
         }
 
-
-
+        $user = $this->security->getUser();
+        $userFilter = new \Elastica\Query\Term();
+        $userFilter->setTerm('user.id', $user->getId());
+        $boolQuery->addFilter($userFilter);
         $searchQuery = new Query($boolQuery);
 
         if ($filter->hasSort()) {
@@ -50,7 +55,6 @@ class TaskFinder
             }
         }
         $searchQuery->setFrom($filter->offset);
-
 
         return $this->finder->find($searchQuery, $filter->limit);
     }

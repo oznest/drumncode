@@ -24,6 +24,10 @@ fos_elastica:
                     type: date
                 completedAt:
                     type: date
+                user:
+                    type: object
+                    properties:
+                        id: ~
             settings:
                 number_of_shards: 1
                 number_of_replicas: 0
