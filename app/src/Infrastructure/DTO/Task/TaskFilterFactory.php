@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Infrastructure\DTO\Task;
@@ -19,9 +20,9 @@ class TaskFilterFactory
             status: $status,
             priority: (int)$request->query->get('priority'),
             q: $request->query->get('q'),
-            sort: $request->query->all('sort') ?? [],
-            limit:  (int) $request->query->get('limit'),
+            limit: (int) $request->query->get('limit'),
             offset: (int) $request->query->get('offset'),
+            sort: $request->query->all('sort') ?? [],
         );
     }
 

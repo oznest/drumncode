@@ -34,7 +34,7 @@ class TaskFinder
             $boolQuery->addFilter($statusFilter);
         }
 
-        if($filter->hasPriorityFilter()) {
+        if ($filter->hasPriorityFilter()) {
             $priorityFilter = new Query\Term();
             $priorityFilter->setTerm('priority', $filter->priority);
             $boolQuery->addFilter($priorityFilter);

@@ -50,7 +50,8 @@ class SearchTasksController extends AbstractController
                 schema: new OA\Schema(
                     type: 'string',
                     enum: ['todo', 'done']
-                )),
+                )
+            ),
             new OA\Parameter(
                 name: 'priority',
                 description: 'Priority from 1 to 5',
@@ -60,10 +61,35 @@ class SearchTasksController extends AbstractController
                     type: 'integer',
                     maximum: 5,
                     minimum: 1
-                )),
-            new OA\Parameter(name: 'sort[createdAt]', in: 'query', required: false, schema: new OA\Schema(type: 'string', enum: ['asc', 'desc'])),
-            new OA\Parameter(name: 'sort[completedAt]', in: 'query', required: false, schema: new OA\Schema(type: 'string', enum: ['asc', 'desc'])),
-            new OA\Parameter(name: 'sort[priority]', in: 'query', required: false, schema: new OA\Schema(type: 'string', enum: ['asc', 'desc'])),
+                )
+            ),
+            new OA\Parameter(
+                name: 'sort[createdAt]',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(
+                    type: 'string',
+                    enum: ['asc', 'desc']
+                )
+            ),
+            new OA\Parameter(
+                name: 'sort[completedAt]',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(
+                    type: 'string',
+                    enum: ['asc', 'desc']
+                )
+            ),
+            new OA\Parameter(
+                name: 'sort[priority]',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(
+                    type: 'string',
+                    enum: ['asc', 'desc']
+                )
+            ),
             new OA\Parameter(
                 name: 'limit',
                 description: 'Maximum number of results to return',
@@ -98,11 +124,9 @@ class SearchTasksController extends AbstractController
         ]
     )]
     public function __invoke(
-       Request $request
+        Request $request
     ): JsonResponse {
         $filter = TaskFilterFactory::fromRequest($request);
-        dump($filter);
-        $queryText = $request->query->get('q', '');
         /** @var Task[] $results */
         $results = $this->handle(new SearchTasksQuery($filter));
 
