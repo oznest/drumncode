@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace App\Application\Command;
 
 use App\Domain\Entity\Task;
-use App\Domain\Enum\TaskStatus;
 use App\Infrastructure\Repository\TaskRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 

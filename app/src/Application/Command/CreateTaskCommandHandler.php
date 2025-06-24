@@ -13,7 +13,6 @@ class CreateTaskCommandHandler
     public function __construct(private EntityManagerInterface $entityManager)
     {
     }
-
     public function __invoke(CreateTaskCommand $command): void
     {
         $task = new Task($command->user);

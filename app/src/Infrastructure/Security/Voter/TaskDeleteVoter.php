@@ -17,9 +17,7 @@ class TaskDeleteVoter extends Voter
 
     protected function voteOnAttribute(string $attribute, $subject, TokenInterface $token): bool
     {
-   /* @var $subject Task */
-        $user = $token->getUser();
-
-        return $user === $subject->getUser() && !$subject->isDone();
+        /* @var $subject Task */
+        return $subject->canBeEditedBy($token->getUser());
     }
 }

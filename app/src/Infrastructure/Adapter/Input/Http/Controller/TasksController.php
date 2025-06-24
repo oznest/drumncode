@@ -30,15 +30,6 @@ final class TasksController extends AbstractController
     ) {
     }
 
-    #[Route('/api/tasks', name: 'app_tasks', methods: ['GET'])]
-    #[OA\Get(tags: ['Tasks'])]
-    public function index(): Response
-    {
-        $all = $this->entityManager->getRepository(Task::class)->findAll();
-        $json = $this->serializer->serialize($all, 'json', ['groups' => ['task:read']]);
-        return JsonResponse::fromJsonString($json);
-    }
-
     #[Route('/api/tasks/{id}', name: 'api_task_show', methods: ['GET'])]
     #[OA\Get(tags: ['Tasks'])]
     #[OA\Response(
@@ -130,9 +121,7 @@ final class TasksController extends AbstractController
         if (count($errors) > 0) {
             return $this->json(['errors' => (string) $errors], 400);
         }
-
         $this->messageBus->dispatch(new DeleteTaskCommand($deleteDto->id));
-
 
         return new Response(null, Response::HTTP_NO_CONTENT);
     }
@@ -148,8 +137,6 @@ final class TasksController extends AbstractController
         int $id,
         Request $request
     ): JsonResponse {
-
-
         $dto = $this->serializer->deserialize($request->getContent(), UpdateStatusDto::class, 'json');
         $dto->id = $id;
 
@@ -158,7 +145,6 @@ final class TasksController extends AbstractController
         if (count($errors) > 0) {
             return $this->json(['errors' => (string) $errors], 400);
         }
-
         /** @var UpdateTaskStatusCommand $command */
         $this->messageBus->dispatch(new UpdateTaskStatusCommand($dto->id, $dto->status));
 

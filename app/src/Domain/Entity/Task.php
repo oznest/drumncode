@@ -9,8 +9,9 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use App\Infrastructure\Repository\TaskRepository;
 
-#[ORM\Entity(repositoryClass: \App\Infrastructure\Repository\TaskRepository::class)]
+#[ORM\Entity(repositoryClass: TaskRepository::class)]
 #[ORM\Table(name: 'tasks')]
 #[ORM\HasLifecycleCallbacks]
 class Task
@@ -191,5 +192,10 @@ class Task
                 $task->setParent(null);
             }
         }
+    }
+
+    public function canBeEditedBy(User $user): bool
+    {
+        return $user === $this->getUser() && !$this->isDone();
     }
 }

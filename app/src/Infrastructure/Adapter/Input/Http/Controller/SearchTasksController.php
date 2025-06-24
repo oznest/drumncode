@@ -6,11 +6,9 @@ namespace App\Infrastructure\Adapter\Input\Http\Controller;
 
 use App\Application\Query\SearchTasksQuery;
 use App\Domain\Entity\Task;
-use App\Infrastructure\DTO\Task\TaskFilter;
 use App\Infrastructure\DTO\Task\TaskFilterFactory;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Messenger\HandleTrait;
