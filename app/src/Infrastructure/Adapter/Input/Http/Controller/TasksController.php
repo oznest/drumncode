@@ -9,7 +9,6 @@ use App\Domain\Entity\Task;
 use App\Infrastructure\DTO\Task\CreateTaskDto;
 use App\Infrastructure\DTO\Task\DeleteTaskDto;
 use App\Infrastructure\DTO\Task\UpdateStatusDto;
-use App\Infrastructure\Repository\TaskRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -147,8 +146,7 @@ final class TasksController extends AbstractController
     #[OA\Tag("Tasks")]
     public function updateStatus(
         int $id,
-        Request $request,
-        TaskRepository $repository
+        Request $request
     ): JsonResponse {
 
 

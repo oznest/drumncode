@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Elasticsearch\Task;
 
-use App\Domain\Enum\TaskStatus;
+use App\Infrastructure\DTO\Task\TaskFilter;
 use Elastica\Query;
 use FOS\ElasticaBundle\Finder\PaginatedFinderInterface;
 
@@ -15,22 +15,43 @@ class TaskFinder
     ) {
     }
 
-    public function searchByText(string $query, int $limit = 10): array
+    public function searchByFilter(TaskFilter $filter): array
     {
         $boolQuery = new Query\BoolQuery();
+        if ($filter->hasQueryFilter()) {
+            $multiMatch = new Query\MultiMatch();
+            $multiMatch
+                ->setQuery($filter->q)
+                ->setFields(['title^2', 'description'])
+                ->setType('phrase');
 
-        $multiMatch = new Query\MultiMatch();
-        $multiMatch->setQuery($query);
-        $multiMatch->setFields(['title^2', 'description']);
+            $boolQuery->addMust($multiMatch);
+        }
 
-        $boolQuery->addMust($multiMatch);
+        if ($filter->hasStatusFilter()) {
+            $statusFilter = new Query\Term();
+            $statusFilter->setTerm('status', $filter->status);
+            $boolQuery->addFilter($statusFilter);
+        }
 
-        $statusFilter = new Query\Term();
-        $statusFilter->setTerm('status', TaskStatus::TODO);
-        $boolQuery->addFilter($statusFilter);
+        if($filter->hasPriorityFilter()) {
+            $priorityFilter = new Query\Term();
+            $priorityFilter->setTerm('priority', $filter->priority);
+            $boolQuery->addFilter($priorityFilter);
+        }
+
+
 
         $searchQuery = new Query($boolQuery);
 
-        return $this->finder->find($searchQuery, $limit);
+        if ($filter->hasSort()) {
+            foreach ($filter->sort as $field => $direction) {
+                $searchQuery->addSort([$field => ['order' => $direction]]);
+            }
+        }
+        $searchQuery->setFrom($filter->offset);
+
+
+        return $this->finder->find($searchQuery, $filter->limit);
     }
 }

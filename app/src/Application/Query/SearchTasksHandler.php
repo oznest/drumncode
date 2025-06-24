@@ -14,6 +14,6 @@ class SearchTasksHandler
 
     public function __invoke(SearchTasksQuery $query): array
     {
-        return $this->finder->searchByText($query->text);
+        return $this->finder->searchByFilter($query->filter);
     }
 }
