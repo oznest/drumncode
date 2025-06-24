@@ -34,9 +34,11 @@ class Task
     private ?string $description = null;
 
     #[ORM\Column(type: 'datetime_immutable')]
+    #[Groups(['task:read'])]
     private \DateTimeImmutable $createdAt;
 
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+    #[Groups(['task:read'])]
     private ?\DateTimeImmutable $completedAt = null;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
@@ -51,12 +53,18 @@ class Task
     #[ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class, cascade: ['persist', 'remove'])]
     private Collection $subtasks;
 
-    public function __construct(User $user)
-    {
+    public function __construct(
+        User $user,
+        ?\DateTimeImmutable $createdAt = null,
+        ?\DateTimeImmutable $completedAt = null,
+    ) {
         $this->user = $user;
-        $this->createdAt = new \DateTimeImmutable();
+        $this->createdAt = $createdAt ?? new \DateTimeImmutable();
         $this->subtasks = new ArrayCollection();
         $this->status = TaskStatus::TODO;
+        if ($completedAt) {
+            $this->completedAt = $completedAt;
+        }
     }
 
     public function getId(): ?int

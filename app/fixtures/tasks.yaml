@@ -2,52 +2,69 @@ App\Domain\Entity\Task:
   task1:
     status: 'todo'
     priority: 1
-    title: 'title'
-    description: 'description'
-    __construct: ['@user_1']
+    title: 'title1'
+    description: 'description1'
+    __construct:
+      user: '@user_1'
+      createdAt: "<(new DateTimeImmutable('2025-06-01'))>"
   task2:
-    status: 'todo'
-    priority: 1
-    title: 'title'
-    description: 'description'
-    __construct: [ '@user_2' ]
+    status: 'done'
+    priority: 2
+    title: 'title2'
+    description: 'description2'
+    __construct:
+      user: '@user_2'
+      createdAt: "<(new DateTimeImmutable('2025-06-07'))>"
+      completedAt: "<(new DateTimeImmutable('2025-06-08'))>"
   task3:
     status: 'done'
     priority: 1
-    title: 'title'
-    description: 'description'
-    __construct: [ '@user_3' ]
+    title: 'title3'
+    description: 'description3'
+    __construct:
+      user: '@user_3'
+      createdAt: "<(new DateTimeImmutable('2025-06-10'))>"
   task4:
     status: 'todo'
     priority: 1
-    title: 'title'
-    description: 'description'
-    __construct: [ '@user_3' ]
+    title: 'title4'
+    description: 'description4'
+    __construct:
+      user: '@user_3'
+      createdAt: "<(new DateTimeImmutable('2025-06-12'))>"
   task5:
     status: 'todo'
     priority: 1
-    title: 'title'
-    description: 'description'
-    __construct: [ '@user_3' ]
+    title: 'title5'
+    description: 'description5'
+    __construct:
+      user: '@user_3'
+      createdAt: "<(new DateTimeImmutable('2025-06-13'))>"
   task6:
     status: 'todo'
     priority: 1
-    title: 'title1'
-    description: 'description1'
-    __construct: [ '@user_1' ]
+    title: 'title6'
+    description: 'description6'
+    __construct:
+      user: '@user_1'
+      createdAt: "<(new DateTimeImmutable('2025-06-15'))>"
   task7:
     status: 'todo'
-    priority: 1
-    title: 'title2'
-    description: 'description2'
+    priority: 3
+    title: 'title7'
+    description: 'description7'
     parent: '@task6'
-    __construct: [ '@user_1' ]
+    __construct:
+      user: '@user_1'
+      createdAt: "<(new DateTimeImmutable('2025-06-20'))>"
   task8:
     status: 'todo'
-    priority: 1
-    title: 'title3'
-    description: 'description3'
+    priority: 2
+    title: 'title8'
+    description: 'description8'
     parent: '@task7'
-    __construct: [ '@user_1' ]
+    __construct:
+      user: '@user_1'
+      createdAt: "<(new DateTimeImmutable('2025-06-21'))>"
 
 
