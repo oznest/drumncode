@@ -22,7 +22,7 @@ class Task
     private ?int $id = null;
     #[ORM\Column(type: 'string', enumType: TaskStatus::class)]
     #[Groups(['task:read'])]
-    private TaskStatus $status;
+    private TaskStatus $status ;
     #[ORM\Column(type: 'smallint', nullable: true)]
     #[Groups(['task:read'])]
     private int $priority;
@@ -37,7 +37,7 @@ class Task
     private \DateTimeImmutable $createdAt;
 
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
-    private ?\DateTimeImmutable $updatedAt = null;
+    private ?\DateTimeImmutable $completedAt = null;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[Groups(['task:read'])]
@@ -55,8 +55,8 @@ class Task
     {
         $this->user = $user;
         $this->createdAt = new \DateTimeImmutable();
-        $this->updatedAt = new \DateTimeImmutable();
         $this->subtasks = new ArrayCollection();
+        $this->status = TaskStatus::TODO;
     }
 
     public function getId(): ?int
@@ -79,17 +79,6 @@ class Task
         return $this->description;
     }
 
-    #[ORM\PreUpdate]
-    public function setUpdatedAtValue(): void
-    {
-        $this->updatedAt = new \DateTimeImmutable();
-    }
-
-    public function getUpdatedAt(): ?\DateTimeImmutable
-    {
-        return $this->updatedAt;
-    }
-
     public function getCreatedAt(): \DateTimeImmutable
     {
         return $this->createdAt;
@@ -97,7 +86,15 @@ class Task
 
     public function setStatus(TaskStatus $status): Task
     {
+        if ($status === TaskStatus::DONE && $this->hasActiveSubtasks()) {
+            throw new \LogicException('This task has active subtasks.');
+        }
+
         $this->status = $status;
+        if ($this->isDone()) {
+            $this->completedAt = new \DateTimeImmutable();
+        }
+
         return $this;
     }
 
@@ -131,7 +128,29 @@ class Task
 
     public function isDone(): bool
     {
+        if (count($this->subtasks)) {
+            foreach ($this->subtasks as $subtask) {
+                if (!$subtask->isDone()) {
+                    return false;
+                }
+            }
+        }
+
         return $this->status === TaskStatus::DONE;
+    }
+
+
+    public function hasActiveSubtasks(): bool
+    {
+        if (count($this->subtasks)) {
+            foreach ($this->subtasks as $subtask) {
+                if (!$subtask->isDone()) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     public function getParent(): ?Task
@@ -142,17 +161,27 @@ class Task
     public function setParent(?Task $parent): Task
     {
         $this->parent = $parent;
+        if ($parent) {
+            $parent->addSubtask($this);
+        }
+
         return $this;
     }
 
-    public function getSubtasks(): Collection
+    public function addSubtask(self $task): void
     {
-        return $this->subtasks;
+        if (!$this->subtasks->contains($task)) {
+            $this->subtasks[] = $task;
+            $task->setParent($this);
+        }
     }
 
-    public function setSubtasks(Collection $subtasks): Task
+    public function removeSubtask(self $task): void
     {
-        $this->subtasks = $subtasks;
-        return $this;
+        if ($this->subtasks->removeElement($task)) {
+            if ($task->getParent() === $this) {
+                $task->setParent(null);
+            }
+        }
     }
 }

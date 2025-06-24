@@ -9,13 +9,13 @@ use App\Domain\Entity\Task;
 use App\Infrastructure\DTO\Task\CreateTaskDto;
 use App\Infrastructure\DTO\Task\DeleteTaskDto;
 use App\Infrastructure\DTO\Task\UpdateStatusDto;
+use App\Infrastructure\Repository\TaskRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -32,6 +32,7 @@ final class TasksController extends AbstractController
     }
 
     #[Route('/api/tasks', name: 'app_tasks', methods: ['GET'])]
+    #[OA\Get(tags: ['Tasks'])]
     public function index(): Response
     {
         $all = $this->entityManager->getRepository(Task::class)->findAll();
@@ -40,6 +41,7 @@ final class TasksController extends AbstractController
     }
 
     #[Route('/api/tasks/{id}', name: 'api_task_show', methods: ['GET'])]
+    #[OA\Get(tags: ['Tasks'])]
     #[OA\Response(
         response: 200,
         description: 'Returns task data',
@@ -100,7 +102,7 @@ final class TasksController extends AbstractController
     #[OA\Delete(
         path: '/api/tasks/{id}',
         summary: 'Delete a task by ID',
-        tags: ['Task'],
+        tags: ['Tasks'],
         parameters: [
             new OA\Parameter(
                 name: 'id',
@@ -122,19 +124,16 @@ final class TasksController extends AbstractController
     )]
     public function delete(int $id): Response
     {
-        try {
-            $deleteDto = new DeleteTaskDto();
-            $deleteDto->id = $id;
+        $deleteDto = new DeleteTaskDto();
+        $deleteDto->id = $id;
 
-            $errors = $this->validator->validate($deleteDto);
-            if (count($errors) > 0) {
-                return $this->json(['errors' => (string) $errors], 400);
-            }
-
-            $this->messageBus->dispatch(new DeleteTaskCommand($deleteDto->id));
-        } catch (\RuntimeException $e) {
-            throw new NotFoundHttpException($e->getMessage());
+        $errors = $this->validator->validate($deleteDto);
+        if (count($errors) > 0) {
+            return $this->json(['errors' => (string) $errors], 400);
         }
+
+        $this->messageBus->dispatch(new DeleteTaskCommand($deleteDto->id));
+
 
         return new Response(null, Response::HTTP_NO_CONTENT);
     }
@@ -145,10 +144,13 @@ final class TasksController extends AbstractController
         content: new OA\JsonContent(ref: '#/components/schemas/UpdateTaskStatusCommand')
     )]
     #[OA\Response(response: 200, description: 'Status updated')]
+    #[OA\Tag("Tasks")]
     public function updateStatus(
         int $id,
-        Request $request
+        Request $request,
+        TaskRepository $repository
     ): JsonResponse {
+
 
         $dto = $this->serializer->deserialize($request->getContent(), UpdateStatusDto::class, 'json');
         $dto->id = $id;

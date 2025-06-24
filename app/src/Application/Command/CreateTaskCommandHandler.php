@@ -17,13 +17,17 @@ class CreateTaskCommandHandler
     public function __invoke(CreateTaskCommand $command): void
     {
         $task = new Task($command->user);
-        $parentTask = $this->entityManager->getRepository(Task::class)->find($command->dto->parent);
+
         $task
             ->setPriority($command->dto->priority)
             ->setTitle($command->dto->title)
             ->setDescription($command->dto->description)
-            ->setStatus(TaskStatus::TODO)
-            ->setParent($parentTask);
+            ->setStatus(TaskStatus::TODO);
+
+        if ($command->dto->parent) {
+            $parentTask = $this->entityManager->getRepository(Task::class)->find($command->dto->parent);
+            $task->setParent($parentTask);
+        }
         $this->entityManager->persist($task);
     }
 }

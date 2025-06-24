@@ -12,7 +12,12 @@ use Symfony\Component\Serializer\Annotation\Groups;
     schema: 'UpdateTaskStatusCommand',
     required: ['status'],
     properties: [
-        new OA\Property(property: 'status', type: 'string', enum: ['todo', 'done'], example: 'todo')
+        new OA\Property(
+            property: 'status',
+            type: 'string',
+            enum: ['todo', 'done'],
+            example: 'done'
+        )
     ],
     type: 'object'
 )]

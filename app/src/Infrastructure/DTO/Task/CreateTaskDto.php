@@ -20,5 +20,5 @@ class CreateTaskDto
     public string $description;
 
     #[ExistsEntity(entityClass: Task::class)]
-    public int $parent;
+    public ?int $parent = null;
 }

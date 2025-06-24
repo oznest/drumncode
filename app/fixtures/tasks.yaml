@@ -29,5 +29,25 @@ App\Domain\Entity\Task:
     title: 'title'
     description: 'description'
     __construct: [ '@user_3' ]
+  task6:
+    status: 'todo'
+    priority: 1
+    title: 'title1'
+    description: 'description1'
+    __construct: [ '@user_1' ]
+  task7:
+    status: 'todo'
+    priority: 1
+    title: 'title2'
+    description: 'description2'
+    parent: '@task6'
+    __construct: [ '@user_1' ]
+  task8:
+    status: 'todo'
+    priority: 1
+    title: 'title3'
+    description: 'description3'
+    parent: '@task7'
+    __construct: [ '@user_1' ]
 
 
