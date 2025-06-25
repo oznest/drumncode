@@ -60,8 +60,8 @@ services:
       - ES_JAVA_OPTS=-Xms512m -Xmx512m
     ports:
       - "9200:9200"
-    volumes:
-      - ./docker/elasticsearch:/usr/share/elasticsearch/data
+#    volumes:
+#      - ./docker/elasticsearch:/usr/share/elasticsearch/data
     networks:
       - symfony
 networks:
