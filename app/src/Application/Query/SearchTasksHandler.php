@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\Query;
 
-use App\Infrastructure\Elasticsearch\Task\TaskFinder;
+use App\Application\Service\TaskFinder;
 
 class SearchTasksHandler
 {
@@ -14,6 +14,6 @@ class SearchTasksHandler
 
     public function __invoke(SearchTasksQuery $query): array
     {
-        return $this->finder->searchByText($query->text);
+        return $this->finder->searchByFilter($query->filter);
     }
 }

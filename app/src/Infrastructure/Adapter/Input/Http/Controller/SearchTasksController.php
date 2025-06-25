@@ -6,6 +6,7 @@ namespace App\Infrastructure\Adapter\Input\Http\Controller;
 
 use App\Application\Query\SearchTasksQuery;
 use App\Domain\Entity\Task;
+use App\Application\DTO\Task\TaskFilterFactory;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
@@ -36,9 +37,71 @@ class SearchTasksController extends AbstractController
                 name: 'q',
                 description: 'Строка для поиска по названию и описанию',
                 in: 'query',
-                required: true,
+                required: false,
                 schema: new OA\Schema(type: 'string')
             ),
+            new OA\Parameter(
+                name: 'status',
+                description: 'Filter tasks by status',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(
+                    type: 'string',
+                    enum: ['todo', 'done']
+                )
+            ),
+            new OA\Parameter(
+                name: 'priority',
+                description: 'Priority from 1 to 5',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(
+                    type: 'integer',
+                    maximum: 5,
+                    minimum: 1
+                )
+            ),
+            new OA\Parameter(
+                name: 'sort[createdAt]',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(
+                    type: 'string',
+                    enum: ['asc', 'desc']
+                )
+            ),
+            new OA\Parameter(
+                name: 'sort[completedAt]',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(
+                    type: 'string',
+                    enum: ['asc', 'desc']
+                )
+            ),
+            new OA\Parameter(
+                name: 'sort[priority]',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(
+                    type: 'string',
+                    enum: ['asc', 'desc']
+                )
+            ),
+            new OA\Parameter(
+                name: 'limit',
+                description: 'Maximum number of results to return',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'integer', minimum: 1, default: 10)
+            ),
+            new OA\Parameter(
+                name: 'offset',
+                description: 'Number of results to skip',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'integer', minimum: 0, default: 0)
+            )
         ],
         responses: [
             new OA\Response(
@@ -58,13 +121,15 @@ class SearchTasksController extends AbstractController
             )
         ]
     )]
-    public function __invoke(Request $request): JsonResponse
-    {
-        $queryText = $request->query->get('q', '');
+    public function __invoke(
+        Request $request
+    ): JsonResponse {
+        $filter = TaskFilterFactory::fromRequest($request);
         /** @var Task[] $results */
-        $results = $this->handle(new SearchTasksQuery($queryText));
+        $results = $this->handle(new SearchTasksQuery($filter));
 
         $json = $this->serializer->serialize($results, 'json', ['groups' => ['task:read']]);
+
         return JsonResponse::fromJsonString($json);
     }
 }

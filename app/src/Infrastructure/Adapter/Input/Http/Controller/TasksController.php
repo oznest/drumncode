@@ -5,17 +5,16 @@ namespace App\Infrastructure\Adapter\Input\Http\Controller;
 use App\Application\Command\CreateTaskCommand;
 use App\Application\Command\DeleteTaskCommand;
 use App\Application\Command\UpdateTaskStatusCommand;
+use App\Application\DTO\Task\CreateTaskDto;
+use App\Application\DTO\Task\DeleteTaskDto;
+use App\Application\DTO\Task\UpdateStatusDto;
 use App\Domain\Entity\Task;
-use App\Infrastructure\DTO\Task\CreateTaskDto;
-use App\Infrastructure\DTO\Task\DeleteTaskDto;
-use App\Infrastructure\DTO\Task\UpdateStatusDto;
 use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -31,31 +30,44 @@ final class TasksController extends AbstractController
     ) {
     }
 
-    #[Route('/api/tasks', name: 'app_tasks', methods: ['GET'])]
-    public function index(): Response
-    {
-        $all = $this->entityManager->getRepository(Task::class)->findAll();
-        $json = $this->serializer->serialize($all, 'json', ['groups' => ['task:read']]);
-        return JsonResponse::fromJsonString($json);
-    }
-
     #[Route('/api/tasks/{id}', name: 'api_task_show', methods: ['GET'])]
-    #[OA\Response(
-        response: 200,
-        description: 'Returns task data',
-        content: new OA\JsonContent(
-            properties: [
-                new OA\Property(property: 'id', type: 'integer'),
-                new OA\Property(property: 'priority', type: 'integer'),
-                new OA\Property(property: 'title', type: 'integer'),
-                new OA\Property(property: 'status', type: 'string', enum: ['todo', 'done'],),
-            ]
-        )
+    #[OA\Get(
+        path: '/api/tasks/{id}',
+        summary: 'Get task by ID',
+        tags: ['Tasks'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Returns task data',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'id', type: 'integer'),
+                        new OA\Property(property: 'priority', type: 'integer'),
+                        new OA\Property(property: 'title', type: 'string'),
+                        new OA\Property(property: 'status', type: 'string', enum: ['todo', 'done'])
+                    ],
+                    type: 'object'
+                )
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'Task not found'
+            )
+        ]
     )]
     public function show(int $id): Response
     {
         $task = $this->entityManager->getRepository(Task::class)->find($id);
         $json = $this->serializer->serialize($task, 'json', ['groups' => ['task:read']]);
+
         return JsonResponse::fromJsonString($json);
     }
 
@@ -71,7 +83,7 @@ final class TasksController extends AbstractController
                     new OA\Property(property: 'priority', type: 'integer', example: 1),
                     new OA\Property(property: 'title', type: 'string', example: 'title'),
                     new OA\Property(property: 'description', type: 'string', example: 'description'),
-                    new OA\Property(property: 'parent', type: 'int', example: 1),
+                    new OA\Property(property: 'parent', type: 'integer', example: 1),
                 ]
             )
         ),
@@ -89,7 +101,7 @@ final class TasksController extends AbstractController
         $taskDto = $this->serializer->deserialize($request->getContent(), CreateTaskDto::class, 'json');
         $errors = $this->validator->validate($taskDto);
         if (count($errors) > 0) {
-            return $this->json(['errors' => (string) $errors], 400);
+            return $this->json(['errors' => (string)$errors], 400);
         }
         $this->messageBus->dispatch(new CreateTaskCommand($taskDto, $this->getUser()));
 
@@ -100,7 +112,7 @@ final class TasksController extends AbstractController
     #[OA\Delete(
         path: '/api/tasks/{id}',
         summary: 'Delete a task by ID',
-        tags: ['Task'],
+        tags: ['Tasks'],
         parameters: [
             new OA\Parameter(
                 name: 'id',
@@ -122,29 +134,47 @@ final class TasksController extends AbstractController
     )]
     public function delete(int $id): Response
     {
-        try {
-            $deleteDto = new DeleteTaskDto();
-            $deleteDto->id = $id;
+        $deleteDto = new DeleteTaskDto();
+        $deleteDto->id = $id;
 
-            $errors = $this->validator->validate($deleteDto);
-            if (count($errors) > 0) {
-                return $this->json(['errors' => (string) $errors], 400);
-            }
-
-            $this->messageBus->dispatch(new DeleteTaskCommand($deleteDto->id));
-        } catch (\RuntimeException $e) {
-            throw new NotFoundHttpException($e->getMessage());
+        $errors = $this->validator->validate($deleteDto);
+        if (count($errors) > 0) {
+            return $this->json(['errors' => (string)$errors], 400);
         }
+        $this->messageBus->dispatch(new DeleteTaskCommand($deleteDto->id));
 
         return new Response(null, Response::HTTP_NO_CONTENT);
     }
 
     #[Route('/api/tasks/{id}/status', name: 'update_task_status', methods: ['PATCH'])]
-    #[OA\RequestBody(
-        required: true,
-        content: new OA\JsonContent(ref: '#/components/schemas/UpdateTaskStatusCommand')
+    #[OA\Patch(
+        path: '/api/tasks/{id}/status',
+        summary: 'Update a task status',
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(ref: '#/components/schemas/UpdateStatusDto')
+        ),
+        parameters: [
+            new OA\Parameter(
+                name: "id",
+                description: "ID of the task to update",
+                in: "path",
+                required: true,
+                schema: new OA\Schema(type: "integer")
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Status updated',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'message', type: 'string', example: 'Status updated')
+                    ]
+                )
+            )
+        ]
     )]
-    #[OA\Response(response: 200, description: 'Status updated')]
     public function updateStatus(
         int $id,
         Request $request
@@ -153,7 +183,6 @@ final class TasksController extends AbstractController
         $dto = $this->serializer->deserialize($request->getContent(), UpdateStatusDto::class, 'json');
         $dto->id = $id;
 
-        $this->validator->validate($dto);
         $errors = $this->validator->validate($dto);
         if (count($errors) > 0) {
             return $this->json(['errors' => (string) $errors], 400);
@@ -162,6 +191,6 @@ final class TasksController extends AbstractController
         /** @var UpdateTaskStatusCommand $command */
         $this->messageBus->dispatch(new UpdateTaskStatusCommand($dto->id, $dto->status));
 
-        return new JsonResponse(['message' => 'Status updated']);
+        return new JsonResponse(['message' => 'Status updated'], Response::HTTP_OK);
     }
 }

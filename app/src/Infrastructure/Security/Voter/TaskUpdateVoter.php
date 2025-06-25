@@ -17,7 +17,6 @@ class TaskUpdateVoter extends Voter
 
     protected function voteOnAttribute(string $attribute, $subject, TokenInterface $token): bool
     {
-        $user = $token->getUser();
-        return $user == $subject->getUser();
+        return $subject->canBeEditedBy($token->getUser());
     }
 }

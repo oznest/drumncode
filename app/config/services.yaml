@@ -39,3 +39,7 @@ services:
             - { name: nelmio_alice.faker.provider }
     FOS\ElasticaBundle\Finder\PaginatedFinderInterface $finder:
         alias: 'fos_elastica.finder.task_index'
+
+    App\Domain\Repository\TaskRepository: '@App\Infrastructure\Repository\DoctrineTaskRepository'
+
+    App\Application\Service\TaskFinder: '@App\Infrastructure\Elasticsearch\Task\ElasticaTaskFinder'

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Application\Command;
 
-use App\Infrastructure\Repository\TaskRepository;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Domain\Entity\Task;
+use App\Domain\Repository\TaskRepository;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
@@ -13,13 +13,13 @@ class UpdateTaskStatusCommandHandler
 {
     public function __construct(
         private TaskRepository $repository,
-        private EntityManagerInterface $em,
         private AuthorizationCheckerInterface $auth
     ) {
     }
 
     public function __invoke(UpdateTaskStatusCommand $command): void
     {
+        /* @var $task Task */
         $task = $this->repository->find($command->id);
         if (!$task) {
             throw new \RuntimeException('Task not found');

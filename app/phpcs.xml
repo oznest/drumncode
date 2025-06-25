@@ -4,7 +4,10 @@
 
     <!-- Include PSR-12 standard -->
     <rule ref="PSR12" />
-
+    <rule ref="Generic.Files.EndFileNewline"/>
+    <rule ref="SlevomatCodingStandard.Classes.MethodSpacing"/>
+    <rule ref="SlevomatCodingStandard.Classes.PropertySpacing"/>
+    <rule ref="SlevomatCodingStandard.ControlStructures.JumpStatementsSpacing"/>
     <!-- Directories to check -->
     <file>src</file>
     <file>tests</file>

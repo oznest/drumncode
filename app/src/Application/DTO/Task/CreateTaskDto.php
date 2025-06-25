@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Infrastructure\DTO\Task;
+namespace App\Application\DTO\Task;
 
 use App\Application\Validator\ExistsEntity;
 use App\Domain\Entity\Task;
@@ -20,5 +20,5 @@ class CreateTaskDto
     public string $description;
 
     #[ExistsEntity(entityClass: Task::class)]
-    public int $parent;
+    public ?int $parent = null;
 }

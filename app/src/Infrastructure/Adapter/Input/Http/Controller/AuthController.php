@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Infrastructure\Adapter\Input\Http\Controller;
 
 use App\Application\Command\RegisterUserCommand;
-use App\Infrastructure\DTO\User\UserRegisterDto;
+use App\Application\DTO\User\UserRegisterDto;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -87,7 +87,8 @@ class AuthController extends AbstractController
         if (count($errors) > 0) {
             return $this->json(['errors' => (string) $errors], 400);
         }
-        $messageBus->dispatch(new RegisterUserCommand($userRegisterDto));
+        $messageBus->dispatch(new RegisterUserCommand($userRegisterDto->email, $userRegisterDto->password));
+
         return $this->json(['message' => 'User registered successfully'], Response::HTTP_CREATED);
     }
 }

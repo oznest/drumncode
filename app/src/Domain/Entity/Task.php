@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace App\Domain\Entity;
 
 use App\Domain\Enum\TaskStatus;
+use App\Infrastructure\Repository\DoctrineTaskRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
-#[ORM\Entity(repositoryClass: \App\Infrastructure\Repository\TaskRepository::class)]
+#[ORM\Entity(repositoryClass: DoctrineTaskRepository::class)]
 #[ORM\Table(name: 'tasks')]
 #[ORM\HasLifecycleCallbacks]
 class Task
@@ -20,24 +21,30 @@ class Task
     #[ORM\Column]
     #[Groups(['task:read'])]
     private ?int $id = null;
+
     #[ORM\Column(type: 'string', enumType: TaskStatus::class)]
     #[Groups(['task:read'])]
-    private TaskStatus $status;
+    private TaskStatus $status ;
+
     #[ORM\Column(type: 'smallint', nullable: true)]
     #[Groups(['task:read'])]
-    private int $priority;
+    private ?int $priority;
+
     #[ORM\Column(type: 'string')]
     #[Groups(['task:read'])]
     private string $title;
+
     #[ORM\Column(type: 'text', nullable: true)]
     #[Groups(['task:read'])]
     private ?string $description = null;
 
     #[ORM\Column(type: 'datetime_immutable')]
+    #[Groups(['task:read'])]
     private \DateTimeImmutable $createdAt;
 
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
-    private ?\DateTimeImmutable $updatedAt = null;
+    #[Groups(['task:read'])]
+    private ?\DateTimeImmutable $completedAt = null;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[Groups(['task:read'])]
@@ -45,18 +52,24 @@ class Task
 
     #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'subtasks')]
     #[ORM\JoinColumn(onDelete: 'SET NULL')]
-    #[Groups(['task:read'])]
     private ?Task $parent = null;
 
     #[ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class, cascade: ['persist', 'remove'])]
+    #[Groups(['task:read'])]
     private Collection $subtasks;
 
-    public function __construct(User $user)
-    {
+    public function __construct(
+        User $user,
+        ?\DateTimeImmutable $createdAt = null,
+        ?\DateTimeImmutable $completedAt = null,
+    ) {
         $this->user = $user;
-        $this->createdAt = new \DateTimeImmutable();
-        $this->updatedAt = new \DateTimeImmutable();
+        $this->createdAt = $createdAt ?? new \DateTimeImmutable();
         $this->subtasks = new ArrayCollection();
+        $this->status = TaskStatus::TODO;
+        if ($completedAt) {
+            $this->completedAt = $completedAt;
+        }
     }
 
     public function getId(): ?int
@@ -79,17 +92,6 @@ class Task
         return $this->description;
     }
 
-    #[ORM\PreUpdate]
-    public function setUpdatedAtValue(): void
-    {
-        $this->updatedAt = new \DateTimeImmutable();
-    }
-
-    public function getUpdatedAt(): ?\DateTimeImmutable
-    {
-        return $this->updatedAt;
-    }
-
     public function getCreatedAt(): \DateTimeImmutable
     {
         return $this->createdAt;
@@ -97,7 +99,15 @@ class Task
 
     public function setStatus(TaskStatus $status): Task
     {
+        if ($status === TaskStatus::DONE && $this->hasActiveSubtasks()) {
+            throw new \LogicException('This task has active subtasks.');
+        }
+
         $this->status = $status;
+        if ($this->isDone()) {
+            $this->completedAt = new \DateTimeImmutable();
+        }
+
         return $this;
     }
 
@@ -108,19 +118,25 @@ class Task
 
     public function setPriority(int $priority): Task
     {
+        if ($priority < 1 || $priority > 5) {
+            throw new \InvalidArgumentException('Priority must be between 1 and 5');
+        }
         $this->priority = $priority;
+
         return $this;
     }
 
     public function setTitle(string $title): Task
     {
         $this->title = $title;
+
         return $this;
     }
 
     public function setDescription(string $description): Task
     {
         $this->description = $description;
+
         return $this;
     }
 
@@ -131,7 +147,28 @@ class Task
 
     public function isDone(): bool
     {
+        if (count($this->subtasks)) {
+            foreach ($this->subtasks as $subtask) {
+                if (!$subtask->isDone()) {
+                    return false;
+                }
+            }
+        }
+
         return $this->status === TaskStatus::DONE;
+    }
+
+    public function hasActiveSubtasks(): bool
+    {
+        if (count($this->subtasks)) {
+            foreach ($this->subtasks as $subtask) {
+                if (!$subtask->isDone()) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     public function getParent(): ?Task
@@ -142,17 +179,40 @@ class Task
     public function setParent(?Task $parent): Task
     {
         $this->parent = $parent;
+        if ($parent) {
+            $parent->addSubtask($this);
+        }
+
         return $this;
     }
 
+    /**
+     * @return Collection<int, Task>
+     */
     public function getSubtasks(): Collection
     {
         return $this->subtasks;
     }
 
-    public function setSubtasks(Collection $subtasks): Task
+    public function addSubtask(self $task): void
     {
-        $this->subtasks = $subtasks;
-        return $this;
+        if (!$this->subtasks->contains($task)) {
+            $this->subtasks[] = $task;
+            $task->setParent($this);
+        }
+    }
+
+    public function removeSubtask(self $task): void
+    {
+        if ($this->subtasks->removeElement($task)) {
+            if ($task->getParent() === $this) {
+                $task->setParent(null);
+            }
+        }
+    }
+
+    public function canBeEditedBy(User $user): bool
+    {
+        return $user === $this->getUser() && !$this->isDone();
     }
 }
