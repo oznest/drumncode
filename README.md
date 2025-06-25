@@ -1,12 +1,17 @@
-1) clone repo https://github.com/oznest/litvinov.git
+1) clone repo https://github.com/oznest/drumncode.git
 2) in project folder run: make build
 3) Than make test to run tests
-4) open http://localhost:8080/weather/Kiev to check weather by Kiev
+4) open http://localhost:8080/api/doc for api documentation
 
+For checking api do next steps:
+1) Login with method POST /api/login 
+{
+"email": "user_1@example.com",
+"password": "password"
+}
+2) Create task with method POST /api/task
+3) Get id of your last task with method GET /api/tasks/search
+4) Update task with method PATCH /api/tasks/{id}/status
+5) Or delete task with method DELETE /api/tasks/{id}
 
-Використав такі бандли:
-1) jms serializer bundle - для десериалізації json
-2) eightpoints/guzzle-bundle - для зручного конфігурування клієнтами + автовайрінг клієнтів зручний + логує запити у symfony devtools
-3) monolog bundle - для логуванн
-
-WEATHER_API_KEY i WEATHER_HOST задаються у файлі .env
+6) For searching tasks use method GET /api/tasks/search it works with elasticsearch full text search.

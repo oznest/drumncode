@@ -154,6 +154,7 @@ final class TasksController extends AbstractController
             required: true,
             content: new OA\JsonContent(ref: '#/components/schemas/UpdateStatusDto')
         ),
+        tags: ['Tasks'],
         parameters: [
             new OA\Parameter(
                 name: "id",
