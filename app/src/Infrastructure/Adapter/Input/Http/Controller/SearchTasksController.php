@@ -35,7 +35,7 @@ class SearchTasksController extends AbstractController
         parameters: [
             new OA\Parameter(
                 name: 'q',
-                description: 'Строка для поиска по названию и описанию',
+                description: 'Search string',
                 in: 'query',
                 required: false,
                 schema: new OA\Schema(type: 'string')
@@ -106,7 +106,7 @@ class SearchTasksController extends AbstractController
         responses: [
             new OA\Response(
                 response: 200,
-                description: 'Список задач, соответствующих запросу',
+                description: 'Task list',
                 content: new OA\JsonContent(
                     type: 'array',
                     items: new OA\Items(
