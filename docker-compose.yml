@@ -9,6 +9,10 @@ services:
       - ./app:/var/www/symfony/app
     environment:
       PHP_IDE_CONFIG: "serverName=drumncode"
+    depends_on:
+      - elasticsearch
+      - db
+
 #    expose:
 #      - 9003
 #      - 9000
