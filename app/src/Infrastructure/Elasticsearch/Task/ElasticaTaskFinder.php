@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Elasticsearch\Task;
 
-use App\Application\Query\SearchTasksQuery;
-use App\Infrastructure\DTO\Task\TaskFilter;
+use App\Application\DTO\Task\TaskFilter;
+use App\Application\Service\TaskFinder;
 use Elastica\Query;
 use FOS\ElasticaBundle\Finder\PaginatedFinderInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 
-class TaskFinder
+class ElasticaTaskFinder implements TaskFinder
 {
     public function __construct(
         private PaginatedFinderInterface $finder, // инжектится fos_elastica.finder.task_index,

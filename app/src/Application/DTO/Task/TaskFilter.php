@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Infrastructure\DTO\Task;
+namespace App\Application\DTO\Task;
 
 use App\Domain\Enum\TaskStatus;
 

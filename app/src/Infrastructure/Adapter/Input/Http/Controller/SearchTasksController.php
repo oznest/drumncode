@@ -6,7 +6,7 @@ namespace App\Infrastructure\Adapter\Input\Http\Controller;
 
 use App\Application\Query\SearchTasksQuery;
 use App\Domain\Entity\Task;
-use App\Infrastructure\DTO\Task\TaskFilterFactory;
+use App\Application\DTO\Task\TaskFilterFactory;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
@@ -129,6 +129,7 @@ class SearchTasksController extends AbstractController
         $results = $this->handle(new SearchTasksQuery($filter));
 
         $json = $this->serializer->serialize($results, 'json', ['groups' => ['task:read']]);
+
         return JsonResponse::fromJsonString($json);
     }
 }

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Application\Command;
 
 use App\Domain\Entity\Task;
-use App\Infrastructure\Repository\TaskRepository;
+use App\Domain\Repository\TaskRepository;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 

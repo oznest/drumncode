@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace App\Infrastructure\Repository;
 
 use App\Domain\Entity\Task;
+use App\Domain\Repository\TaskRepository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @method Task            find()
+ * @method Task  find()
  */
-class TaskRepository extends ServiceEntityRepository
+class DoctrineTaskRepository extends ServiceEntityRepository implements TaskRepository
 {
     public function __construct(ManagerRegistry $registry)
     {

@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace App\Domain\Entity;
 
 use App\Domain\Enum\TaskStatus;
+use App\Infrastructure\Repository\DoctrineTaskRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
-use App\Infrastructure\Repository\TaskRepository;
 
-#[ORM\Entity(repositoryClass: TaskRepository::class)]
+#[ORM\Entity(repositoryClass: DoctrineTaskRepository::class)]
 #[ORM\Table(name: 'tasks')]
 #[ORM\HasLifecycleCallbacks]
 class Task
@@ -21,15 +21,19 @@ class Task
     #[ORM\Column]
     #[Groups(['task:read'])]
     private ?int $id = null;
+
     #[ORM\Column(type: 'string', enumType: TaskStatus::class)]
     #[Groups(['task:read'])]
     private TaskStatus $status ;
+
     #[ORM\Column(type: 'smallint', nullable: true)]
     #[Groups(['task:read'])]
-    private int $priority;
+    private ?int $priority;
+
     #[ORM\Column(type: 'string')]
     #[Groups(['task:read'])]
     private string $title;
+
     #[ORM\Column(type: 'text', nullable: true)]
     #[Groups(['task:read'])]
     private ?string $description = null;
@@ -114,19 +118,25 @@ class Task
 
     public function setPriority(int $priority): Task
     {
+        if ($priority < 1 || $priority > 5) {
+            throw new \InvalidArgumentException('Priority must be between 1 and 5');
+        }
         $this->priority = $priority;
+
         return $this;
     }
 
     public function setTitle(string $title): Task
     {
         $this->title = $title;
+
         return $this;
     }
 
     public function setDescription(string $description): Task
     {
         $this->description = $description;
+
         return $this;
     }
 
@@ -147,7 +157,6 @@ class Task
 
         return $this->status === TaskStatus::DONE;
     }
-
 
     public function hasActiveSubtasks(): bool
     {
@@ -177,6 +186,9 @@ class Task
         return $this;
     }
 
+    /**
+     * @return Collection<int, Task>
+     */
     public function getSubtasks(): Collection
     {
         return $this->subtasks;

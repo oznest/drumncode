@@ -17,4 +17,4 @@ nelmio_api_doc:
             - ^/api(?!/doc$) # Accepts routes under /api except /api/doc
     models:
         names:
-            - { type: App\Application\Command\UpdateTaskStatusCommand, groups: [ 'update_status' ], alias: UpdateTaskStatusCommand}
+            - { type: App\Application\DTO\Task\UpdateStatusDto, groups: [ 'update_status' ], alias: UpdateStatusDto}
