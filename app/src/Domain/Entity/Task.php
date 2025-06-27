@@ -7,7 +7,6 @@ namespace App\Domain\Entity;
 use App\Domain\Enum\TaskStatus;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 class Task
@@ -36,7 +35,6 @@ class Task
     #[Groups(['task:read'])]
     private User $user;
 
-    #[ORM\JoinColumn(onDelete: 'SET NULL')]
     private ?Task $parent = null;
 
     #[Groups(['task:read'])]
