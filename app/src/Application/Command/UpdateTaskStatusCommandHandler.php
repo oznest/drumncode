@@ -19,7 +19,7 @@ class UpdateTaskStatusCommandHandler
 
     public function __invoke(UpdateTaskStatusCommand $command): void
     {
-        /* @var $task Task */
+        /** @var Task $task */
         $task = $this->repository->find($command->id);
         if (!$task) {
             throw new \RuntimeException('Task not found');
