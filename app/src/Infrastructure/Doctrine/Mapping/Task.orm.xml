@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                                      https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="App\Domain\Entity\Task" table="tasks" repository-class="App\Infrastructure\Repository\DoctrineTaskRepository">
+        <id name="id" type="integer" column="id">
+            <generator strategy="AUTO"/>
+        </id>
+
+        <field name="status" type="string" column="status" enum-type="App\Domain\Enum\TaskStatus" />
+
+        <field name="priority" type="smallint" nullable="true" />
+
+        <field name="title" type="string" />
+
+        <field name="description" type="text" nullable="true" />
+
+        <field name="createdAt" type="datetime_immutable" column="created_at" />
+
+        <field name="completedAt" type="datetime_immutable" nullable="true" column="completed_at" />
+
+        <many-to-one field="user" target-entity="App\Domain\Entity\User" />
+
+        <many-to-one field="parent" target-entity="App\Domain\Entity\Task" inversed-by="subtasks">
+            <join-column name="parent_id" referenced-column-name="id" on-delete="SET NULL"/>
+        </many-to-one>
+
+        <one-to-many field="subtasks" target-entity="App\Domain\Entity\Task" mapped-by="parent">
+            <cascade>
+                <cascade-persist/>
+                <cascade-remove/>
+            </cascade>
+        </one-to-many>
+
+        <lifecycle-callbacks>
+            <!-- Здесь можно добавить коллбеки, если у вас есть, например prePersist -->
+        </lifecycle-callbacks>
+
+    </entity>
+
+</doctrine-mapping>
