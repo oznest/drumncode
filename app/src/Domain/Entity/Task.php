@@ -5,56 +5,38 @@ declare(strict_types=1);
 namespace App\Domain\Entity;
 
 use App\Domain\Enum\TaskStatus;
-use App\Infrastructure\Repository\DoctrineTaskRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
-#[ORM\Entity(repositoryClass: DoctrineTaskRepository::class)]
-#[ORM\Table(name: 'tasks')]
-#[ORM\HasLifecycleCallbacks]
 class Task
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
     #[Groups(['task:read'])]
     private ?int $id = null;
 
-    #[ORM\Column(type: 'string', enumType: TaskStatus::class)]
     #[Groups(['task:read'])]
     private TaskStatus $status ;
 
-    #[ORM\Column(type: 'smallint', nullable: true)]
     #[Groups(['task:read'])]
     private ?int $priority;
 
-    #[ORM\Column(type: 'string')]
     #[Groups(['task:read'])]
     private string $title;
 
-    #[ORM\Column(type: 'text', nullable: true)]
     #[Groups(['task:read'])]
     private ?string $description = null;
 
-    #[ORM\Column(type: 'datetime_immutable')]
     #[Groups(['task:read'])]
     private \DateTimeImmutable $createdAt;
 
-    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     #[Groups(['task:read'])]
     private ?\DateTimeImmutable $completedAt = null;
 
-    #[ORM\ManyToOne(targetEntity: User::class)]
     #[Groups(['task:read'])]
     private User $user;
 
-    #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'subtasks')]
-    #[ORM\JoinColumn(onDelete: 'SET NULL')]
     private ?Task $parent = null;
 
-    #[ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class, cascade: ['persist', 'remove'])]
     #[Groups(['task:read'])]
     private Collection $subtasks;
 
