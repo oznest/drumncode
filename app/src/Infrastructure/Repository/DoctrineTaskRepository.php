@@ -10,7 +10,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @method Task  find()
+ * @method Task  find(int $id)
  */
 class DoctrineTaskRepository extends ServiceEntityRepository implements TaskRepository
 {

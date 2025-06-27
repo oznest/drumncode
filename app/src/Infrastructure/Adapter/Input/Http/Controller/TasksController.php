@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Infrastructure\Adapter\Input\Http\Controller;
 
 use App\Application\Command\CreateTaskCommand;
@@ -20,7 +22,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-final class TasksController extends AbstractController
+class TasksController extends AbstractController
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,

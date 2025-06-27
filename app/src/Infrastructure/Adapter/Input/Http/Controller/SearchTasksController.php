@@ -127,7 +127,6 @@ class SearchTasksController extends AbstractController
         $filter = TaskFilterFactory::fromRequest($request);
         /** @var Task[] $results */
         $results = $this->handle(new SearchTasksQuery($filter));
-
         $json = $this->serializer->serialize($results, 'json', ['groups' => ['task:read']]);
 
         return JsonResponse::fromJsonString($json);

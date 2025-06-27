@@ -1,11 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests;
 
 use App\Domain\Entity\Task;
 use App\Domain\Entity\User;
 use App\Domain\Enum\TaskStatus;
-use Test;
 use PHPUnit\Framework\TestCase;
 
 class TestTest extends TestCase
