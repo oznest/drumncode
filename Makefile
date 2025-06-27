@@ -13,7 +13,7 @@ composer_install:
 recreate:
 	make down && make up
 check_code_style:
-	docker exec -it -w /var/www/symfony/app/ symfony_php php vendor/bin/phpcs
+	docker exec -it -w /var/www/symfony/app/ symfony_php php vendor/bin/phpcs && docker exec -it -w /var/www/symfony/app/ symfony_php php vendor/bin/deptrac analyse
 fix_code_style:
 	docker exec -it -w /var/www/symfony/app/ symfony_php php vendor/bin/phpcbf
 restart_php:
