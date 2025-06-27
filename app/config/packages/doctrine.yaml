@@ -19,10 +19,11 @@ doctrine:
         auto_mapping: true
         mappings:
             Domain:
-                type: xml
-                dir: '%kernel.project_dir%/src/Infrastructure/Doctrine/Mapping'
-                prefix: 'App\Domain\Entity'
                 is_bundle: false
+                type: xml
+                dir: '%kernel.project_dir%/src/Infrastructure/Doctrine/Mapping/'
+                prefix: 'App\Domain\Entity'
+                alias: App\Domain
         controller_resolver:
             auto_mapping: false
 

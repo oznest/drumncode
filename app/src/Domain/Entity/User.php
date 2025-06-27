@@ -10,6 +10,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
+    #[Groups(['task:read'])]
     private ?int $id = null;
 
     #[Groups(['task:read'])]
