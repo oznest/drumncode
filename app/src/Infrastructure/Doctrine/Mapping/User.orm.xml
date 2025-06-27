@@ -9,11 +9,11 @@
             <generator strategy="AUTO"/>
         </id>
 
-        <field name="email" type="string" unique="true" />
+        <field name="email" type="string" unique="true"/>
 
-        <field name="password" type="string" />
+        <field name="password" type="string"/>
 
-        <field name="roles" type="json" />
+        <field name="roles" type="json"/>
     </entity>
 
 </doctrine-mapping>
