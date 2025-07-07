@@ -1,5 +1,6 @@
 PHP_CONTAINER = symfony_php
-WORKDIR = /var/www/symfony/app/
+#WORKDIR = /var/www/symfony/app/
+WORKDIR = /app/
 EXEC_PHP = docker exec -it -w $(WORKDIR) $(PHP_CONTAINER)
 
 # Цели
