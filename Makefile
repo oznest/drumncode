@@ -52,7 +52,7 @@ elastica_populate:
 	$(EXEC_PHP) php bin/console fos:elastica:populate
 
 generate_jwt_pair:
-	$(EXEC_PHP) php bin/console lexik:jwt:generate-keypair
+	$(EXEC_PHP) php bin/console --overwrite -q lexik:jwt:generate-keypair
 
 install:
 	make composer_install && \
