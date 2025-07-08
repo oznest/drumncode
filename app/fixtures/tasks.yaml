@@ -1,6 +1,6 @@
 App\Domain\Entity\Task:
   task1:
-    status: 'todo'
+    status: '<(App\Domain\Enum\TaskStatus::TODO)>'
     priority: 1
     title: 'title1'
     description: 'description1'
@@ -8,7 +8,7 @@ App\Domain\Entity\Task:
       user: '@user_1'
       createdAt: "<(new DateTimeImmutable('2025-06-01'))>"
   task2:
-    status: 'done'
+    status: '<(App\Domain\Enum\TaskStatus::DONE)>'
     priority: 2
     title: 'title2'
     description: 'description2'
@@ -17,7 +17,7 @@ App\Domain\Entity\Task:
       createdAt: "<(new DateTimeImmutable('2025-06-07'))>"
       completedAt: "<(new DateTimeImmutable('2025-06-08'))>"
   task3:
-    status: 'done'
+    status: '<(App\Domain\Enum\TaskStatus::DONE)>'
     priority: 1
     title: 'title3'
     description: 'description3'
@@ -25,7 +25,7 @@ App\Domain\Entity\Task:
       user: '@user_3'
       createdAt: "<(new DateTimeImmutable('2025-06-10'))>"
   task4:
-    status: 'todo'
+    status: '<(App\Domain\Enum\TaskStatus::TODO)>'
     priority: 1
     title: 'title4'
     description: 'description4'
@@ -33,7 +33,7 @@ App\Domain\Entity\Task:
       user: '@user_3'
       createdAt: "<(new DateTimeImmutable('2025-06-12'))>"
   task5:
-    status: 'todo'
+    status: '<(App\Domain\Enum\TaskStatus::TODO)>'
     priority: 1
     title: 'title5'
     description: 'description5'
@@ -41,7 +41,7 @@ App\Domain\Entity\Task:
       user: '@user_3'
       createdAt: "<(new DateTimeImmutable('2025-06-13'))>"
   task6:
-    status: 'todo'
+    status: '<(App\Domain\Enum\TaskStatus::TODO)>'
     priority: 1
     title: 'title6'
     description: 'description6'
@@ -49,7 +49,7 @@ App\Domain\Entity\Task:
       user: '@user_1'
       createdAt: "<(new DateTimeImmutable('2025-06-15'))>"
   task7:
-    status: 'todo'
+    status: '<(App\Domain\Enum\TaskStatus::TODO)>'
     priority: 3
     title: 'title7'
     description: 'description7'
@@ -58,7 +58,7 @@ App\Domain\Entity\Task:
       user: '@user_1'
       createdAt: "<(new DateTimeImmutable('2025-06-20'))>"
   task8:
-    status: 'todo'
+    status: '<(App\Domain\Enum\TaskStatus::TODO)>'
     priority: 2
     title: 'title8'
     description: 'description8'

@@ -144,18 +144,6 @@
             "tests/bootstrap.php"
         ]
     },
-    "qossmic/deptrac": {
-        "version": "2.0",
-        "recipe": {
-            "repo": "github.com/symfony/recipes-contrib",
-            "branch": "main",
-            "version": "2.0",
-            "ref": "05ab8813714080c7bc915cb10c780e6cfdbdb991"
-        },
-        "files": [
-            "deptrac.yaml"
-        ]
-    },
     "squizlabs/php_codesniffer": {
         "version": "3.13",
         "recipe": {
@@ -321,6 +309,18 @@
             "bin/phpunit",
             "phpunit.xml.dist",
             "tests/bootstrap.php"
+        ]
+    },
+    "symfony/property-info": {
+        "version": "7.3",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "7.3",
+            "ref": "dae70df71978ae9226ae915ffd5fad817f5ca1f7"
+        },
+        "files": [
+            "config/packages/property_info.yaml"
         ]
     },
     "symfony/routing": {
