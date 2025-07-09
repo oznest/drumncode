@@ -9,6 +9,9 @@ RUN apt-get update && apt-get install -y \
     libpq-dev \
     && docker-php-ext-install opcache pdo_mysql
 
+RUN pecl install apcu \
+    && docker-php-ext-enable apcu
+
 # Установка Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 

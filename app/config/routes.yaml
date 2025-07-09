@@ -1,5 +1,11 @@
-infrastructure_controllers:
+infrastructure_input_controllers:
     resource:
         path: ../src/Infrastructure/Adapter/Input/Http/Controller/
         namespace: App\Infrastructure\Adapter\Input\Http\Controller\
+    type: attribute
+
+infrastructure_output_controllers:
+    resource:
+        path: ../src/Infrastructure/Adapter/Output/Http/Controller/
+        namespace: App\Infrastructure\Adapter\Output\Http\Controller\
     type: attribute
