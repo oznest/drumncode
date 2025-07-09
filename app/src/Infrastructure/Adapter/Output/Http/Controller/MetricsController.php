@@ -1,8 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Infrastructure\Adapter\Output\Http\Controller;
-
 
 use App\Service\PrometheusService;
 use Prometheus\RenderTextFormat;
@@ -20,6 +20,7 @@ class MetricsController extends AbstractController
         $renderer = new RenderTextFormat();
         $metrics = $registry->getMetricFamilySamples();
         $result = $renderer->render($metrics);
+
         return new Response($result, 200, [
             'Content-Type' => RenderTextFormat::MIME_TYPE,
         ]);

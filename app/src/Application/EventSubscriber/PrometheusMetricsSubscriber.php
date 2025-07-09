@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Application\EventSubscriber;
@@ -26,12 +27,16 @@ class PrometheusMetricsSubscriber implements EventSubscriberInterface
 
         // Реєструємо метрики:
         $this->registry->getOrRegisterCounter(
-            'api', 'request_count', 'Total number of HTTP requests',
+            'api',
+            'request_count',
+            'Total number of HTTP requests',
             ['method', 'endpoint', 'status']
         );
 
         $this->registry->getOrRegisterHistogram(
-            'api', 'request_duration_seconds', 'HTTP request duration in seconds',
+            'api',
+            'request_duration_seconds',
+            'HTTP request duration in seconds',
             ['method', 'endpoint', 'status']
         );
         $this->logger = $logger;
