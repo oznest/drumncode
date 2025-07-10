@@ -60,10 +60,14 @@ services:
 
   grafana:
     image: grafana/grafana
+    container_name: grafana
+    user: "472"
     ports:
       - "3000:3000"
     networks:
       - symfony
+    volumes:
+      - ./docker/grafana/:/var/lib/grafana
 networks:
   symfony:
     driver: bridge
