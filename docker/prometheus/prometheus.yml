@@ -2,10 +2,7 @@ global:
   scrape_interval: 15s
 
 scrape_configs:
-  - job_name: 'symfony_api'
+  - job_name: 'symfony'
     metrics_path: /metrics
-    scheme: http
     static_configs:
-      - targets: ['symfony_php']  # адрес твоего Symfony API с метриками
-#    tls_config:
-#      insecure_skip_verify: true
+      - targets: ['symfony_php']  # 👈 порт 443s
