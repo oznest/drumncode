@@ -54,8 +54,12 @@ elastica_populate:
 generate_jwt_pair:
 	$(EXEC_PHP) php bin/console --overwrite -q lexik:jwt:generate-keypair
 
+drop_db:
+	$(EXEC_PHP) php bin/console doctrine:database:drop --force --if-exists
+
 install:
 	make composer_install && \
+	make drop_db && \
 	make create_db && \
 	make migrate && \
 	make fixtures_load && \
