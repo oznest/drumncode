@@ -11,7 +11,7 @@ services:
       - "9003:9003" # для xdebug, если надо
     volumes:
       - ./app:/app
-      - ./docker/php/Caddyfile:/etc/frankenphp/Caddyfiles
+      - ./docker/php/Caddyfile:/etc/frankenphp/Caddyfile
     environment:
       APP_ENV: dev
     networks:
@@ -47,6 +47,27 @@ services:
 #      - ./docker/elasticsearch:/usr/share/elasticsearch/data
     networks:
       - symfony
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    volumes:
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - symfony
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    user: "472"
+    ports:
+      - "3000:3000"
+    networks:
+      - symfony
+    volumes:
+      - ./docker/grafana/:/var/lib/grafana
 networks:
   symfony:
     driver: bridge

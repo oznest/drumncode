@@ -4,3 +4,6 @@
 /app/bin/.phpunit.result.cache
 /docker/mysql/
 /docker/elasticsearch/
+/docker/grafana/grafana.db
+/app/.deptrac.cache
+/docker/grafana/plugins/
