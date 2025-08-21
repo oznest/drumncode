@@ -13,3 +13,7 @@ yarn-error.log
 ###> lexik/jwt-authentication-bundle ###
 /config/jwt/*.pem
 ###< lexik/jwt-authentication-bundle ###
+
+###> deptrac/deptrac ###
+/.deptrac.cache
+###< deptrac/deptrac ###

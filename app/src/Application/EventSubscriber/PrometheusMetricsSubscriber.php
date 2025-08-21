@@ -21,8 +21,10 @@ class PrometheusMetricsSubscriber implements EventSubscriberInterface
 
     private LoggerInterface $logger;
 
-    public function __construct(PrometheusService $prometheusService, LoggerInterface $logger)
-    {
+    public function __construct(
+        PrometheusService $prometheusService,
+        LoggerInterface $logger
+    ) {
         $this->registry = $prometheusService->getRegistry();
 
         // Реєструємо метрики:
@@ -52,7 +54,7 @@ class PrometheusMetricsSubscriber implements EventSubscriberInterface
 
     public function onKernelRequest(RequestEvent $event): void
     {
-        $this->logger->error('Kernel Request');
+        //$this->logger->error('Kernel Request');
         // Запам'ятовуємо стартовий час для конкретного запиту (key - унікальний id)
         $request = $event->getRequest();
         $endpoint = $request->getPathInfo();
@@ -71,7 +73,7 @@ class PrometheusMetricsSubscriber implements EventSubscriberInterface
 
     public function onKernelResponse(ResponseEvent $event): void
     {
-        $this->logger->error('Kernel Response');
+        // $this->logger->error('Kernel Response');
         $request = $event->getRequest();
         $response = $event->getResponse();
 

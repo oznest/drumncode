@@ -6,7 +6,11 @@ RUN install-php-extensions \
     pdo_mysql \
     opcache \
     curl \
-    apcu
+    apcu \
+    xdebug \
+    amqp \
+    intl \
+    opentelemetry
 
 RUN apt-get update && apt-get install -y \
     unzip \
@@ -15,6 +19,9 @@ RUN apt-get update && apt-get install -y \
 
 # Установка Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+COPY xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
+COPY apcu.ini /usr/local/etc/php/conf.d/apcu.ini
 
 # Symfony CLI (по желанию)
 RUN curl -sS https://get.symfony.com/cli/installer | bash \

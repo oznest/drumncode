@@ -5,12 +5,18 @@ declare(strict_types=1);
 namespace App\Domain\Entity;
 
 use App\Domain\Enum\TaskStatus;
+use App\Domain\Event\StatusChangedEvent;
+use App\Domain\EventReleaseInterface;
+use App\Domain\EventsTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Serializer\Annotation\Groups;
+use App\Domain\Event\SubtaskAddedEvent;
 
-class Task
+class Task implements EventReleaseInterface
 {
+    use EventsTrait;
+
     #[Groups(['task:read'])]
     private ?int $id = null;
 
@@ -89,6 +95,8 @@ class Task
         if ($this->isDone()) {
             $this->completedAt = new \DateTimeImmutable();
         }
+
+        $this->record(new StatusChangedEvent($this->id ?? 0));
 
         return $this;
     }
@@ -181,6 +189,7 @@ class Task
         if (!$this->subtasks->contains($task)) {
             $this->subtasks[] = $task;
             $task->setParent($this);
+            $this->record(new SubtaskAddedEvent($this, $task));
         }
     }
 

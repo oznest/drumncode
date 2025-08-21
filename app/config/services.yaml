@@ -43,3 +43,9 @@ services:
     App\Domain\Repository\TaskRepository: '@App\Infrastructure\Repository\DoctrineTaskRepository'
 
     App\Application\Service\TaskFinder: '@App\Infrastructure\Elasticsearch\Task\ElasticaTaskFinder'
+    App\Infrastructure\Doctrine\DomainEventsSubscriber:
+      tags:
+        - { name: 'doctrine.event_subscriber' }
+    App\Infrastructure\Doctrine\EventListener\DoctrineFlushListener:
+      tags:
+        - { name: doctrine.event_listener, event: postFlush }

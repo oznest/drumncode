@@ -11,15 +11,18 @@ use App\Application\DTO\Task\CreateTaskDto;
 use App\Application\DTO\Task\DeleteTaskDto;
 use App\Application\DTO\Task\UpdateStatusDto;
 use App\Domain\Entity\Task;
+use App\Domain\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\String\ByteString;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class TasksController extends AbstractController
@@ -65,10 +68,21 @@ class TasksController extends AbstractController
             )
         ]
     )]
-    public function show(int $id): Response
+    public function show(int $id, MailerInterface $mailer): Response
     {
         $task = $this->entityManager->getRepository(Task::class)->find($id);
         $json = $this->serializer->serialize($task, 'json', ['groups' => ['task:read']]);
+
+//        $email = (new Email())
+//            ->from('hello@example.com')
+//            ->to('user@example.com')
+//            ->subject('Тестовое письмо')
+//            ->text('Привет! Это текстовое письмо.')
+//            ->html('<p>Привет! Это <strong>HTML</strong> письмо.</p>');
+//
+//
+//        $mailer->send($email);
+        //$bus->dispatch(new FanoutEvent('test 123'));
 
         return JsonResponse::fromJsonString($json);
     }
@@ -98,7 +112,8 @@ class TasksController extends AbstractController
         ]
     )]
     public function create(
-        Request $request
+        Request $request,
+        EntityManagerInterface $em
     ): JsonResponse {
         $taskDto = $this->serializer->deserialize($request->getContent(), CreateTaskDto::class, 'json');
         $errors = $this->validator->validate($taskDto);
@@ -106,6 +121,15 @@ class TasksController extends AbstractController
             return $this->json(['errors' => (string)$errors], 400);
         }
         $this->messageBus->dispatch(new CreateTaskCommand($taskDto, $this->getUser()));
+
+        $user = new User();
+        $user
+            ->setEmail(ByteString::fromRandom(12)->toString())
+            ->setPassword('test')
+            ->setRoles(['ROLE_USER']);
+        ;
+        $em->persist($user);
+        $em->flush();
 
         return $this->json(['message' => 'Task created'], 201);
     }
