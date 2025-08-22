@@ -18,6 +18,8 @@ services:
       - symfony
     depends_on:
       - db
+      - elasticsearch
+      - rabbitmq
 
   db:
     image: mysql:latest
