@@ -6,7 +6,6 @@ namespace App\Infrastructure\Adapter\Input\Http\Controller;
 
 use App\Application\Command\RegisterUserCommand;
 use App\Application\DTO\User\UserRegisterDto;
-use App\Infrastructure\Tracing\TracerFactory;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -19,11 +18,6 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class AuthController extends AbstractController
 {
-    public function __construct(
-        private TracerFactory $tracerFactory
-    ) {
-    }
-
     #[Route('/api/login', name: 'api_login', methods: ['POST'])]
     #[OA\Post(
         path: '/api/login',
@@ -88,9 +82,6 @@ class AuthController extends AbstractController
         ValidatorInterface $validator,
         MessageBusInterface $messageBus
     ): JsonResponse {
-        $tracer = $this->tracerFactory->getTracer();
-        $span = $tracer->spanBuilder('example-operation')->startSpan();
-        $span->setAttribute('foo', 'bar');
 
         $userRegisterDto = $serializer->deserialize($request->getContent(), UserRegisterDto::class, 'json');
         $errors = $validator->validate($userRegisterDto);
@@ -98,7 +89,6 @@ class AuthController extends AbstractController
             return $this->json(['errors' => (string) $errors], 400);
         }
         $messageBus->dispatch(new RegisterUserCommand($userRegisterDto->email, $userRegisterDto->password));
-        $span->end();
 
         return $this->json(['message' => 'User registered successfully'], Response::HTTP_CREATED);
     }

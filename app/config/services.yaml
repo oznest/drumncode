@@ -49,3 +49,8 @@ services:
     App\Infrastructure\Doctrine\EventListener\DoctrineFlushListener:
       tags:
         - { name: doctrine.event_listener, event: postFlush }
+
+    App\Infrastructure\Tracing\TracerFactory:
+      arguments:
+        $serviceName: 'symfony-demo'
+        $url: '%env(JAEGER_URL)%'

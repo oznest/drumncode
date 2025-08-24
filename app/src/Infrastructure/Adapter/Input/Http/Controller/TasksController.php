@@ -12,13 +12,13 @@ use App\Application\DTO\Task\DeleteTaskDto;
 use App\Application\DTO\Task\UpdateStatusDto;
 use App\Domain\Entity\Task;
 use App\Domain\Entity\User;
+use App\Infrastructure\Tracing\TracerFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -68,23 +68,30 @@ class TasksController extends AbstractController
             )
         ]
     )]
-    public function show(int $id, MailerInterface $mailer): Response
-    {
+    public function show(
+        int $id,
+        TracerFactory $tracerFactory,
+        Request $request,
+    ): Response {
         $task = $this->entityManager->getRepository(Task::class)->find($id);
         $json = $this->serializer->serialize($task, 'json', ['groups' => ['task:read']]);
 
-//        $email = (new Email())
-//            ->from('hello@example.com')
-//            ->to('user@example.com')
-//            ->subject('Тестовое письмо')
-//            ->text('Привет! Это текстовое письмо.')
-//            ->html('<p>Привет! Это <strong>HTML</strong> письмо.</p>');
-//
-//
-//        $mailer->send($email);
-        //$bus->dispatch(new FanoutEvent('test 123'));
 
-        return JsonResponse::fromJsonString($json);
+        $tracer = $tracerFactory->getTracer();
+        $span = $tracer
+            ->spanBuilder('TaskController.show')
+            ->setAttribute('http.method', $request->getMethod())
+            ->setAttribute('http.target', $request->getPathInfo())
+            ->setAttribute('http.host', $request->getHost())
+            ->startSpan();
+        $scope = $span->activate();
+        try {
+            return JsonResponse::fromJsonString($json);
+        } finally {
+            $scope->detach();
+
+            $span->end();
+        }
     }
 
     #[Route('/api/tasks', name: 'task_create', methods: ['POST'])]

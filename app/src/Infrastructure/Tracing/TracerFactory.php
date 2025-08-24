@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Tracing;
 
-use OpenTelemetry\API\Common\Time\SystemClock;
 use OpenTelemetry\Contrib\Otlp\OtlpHttpTransportFactory;
+use OpenTelemetry\SDK\Trace\SpanProcessor\SimpleSpanProcessor;
 use OpenTelemetry\SDK\Trace\TracerProvider;
-use OpenTelemetry\SDK\Trace\SpanProcessor\BatchSpanProcessor;
 use OpenTelemetry\Contrib\Otlp\SpanExporter;
 use OpenTelemetry\API\Trace\TracerInterface;
 
@@ -15,14 +14,14 @@ class TracerFactory
 {
     private TracerInterface $tracer;
 
-    public function __construct(string $serviceName = 'symfony-app')
+    public function __construct(string $url,string $serviceName = 'symfony-app')
     {
-        $transport = (new OtlpHttpTransportFactory())->create('http://jaeger:4318', 'application/json');
+        $transport = (new OtlpHttpTransportFactory())
+            ->create($url, 'application/x-protobuf');
         $exporter = new SpanExporter($transport);
-        $tracerProvider = new TracerProvider(
-            new BatchSpanProcessor($exporter, new SystemClock())
-        );
+        $spanProcessor = new SimpleSpanProcessor($exporter);
 
+        $tracerProvider = new TracerProvider($spanProcessor);
         $this->tracer = $tracerProvider->getTracer($serviceName);
     }
 
